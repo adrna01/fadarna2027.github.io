@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fruity-Wooty-Woo</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap">
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            border: 0;
+            cursor: crosshair;
+            font-family: 'VT323', monospace;
+        }
+
+        .navbar {
+            background-color: #333; 
+            padding: 3px;
+            text-align: center; 
+        }
+
+        .navbar a {
+            color: white; 
+            text-decoration: none; 
+            padding: 10px 20px; 
+            border-radius: 5px;
+            margin: 0 10px; 
+            transition: background-color 0.3s;
+        }
+
+        .navbar p {
+            margin: 0;
+            font-size: x-large;
+        }
+
+        .navbar a:hover {
+            background-color: #555; 
+        }
+
+        #pre-countdown-text {
+            text-align: center;
+        }
+
+        body {
+            overflow: hidden;
+            background-color: #000;
+            color: #fff;
+            user-select: none;
+            cursor: crosshair; 
+        }
+        #game-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            border: 2px solid black;
+            overflow: hidden;
+        }
+        .fruit {
+            position: absolute;
+            width: 90px; 
+            height: 90px; 
+        }
+        .bomb {
+            position: absolute;
+            background-image: url('images/bomb.png');
+            background-size: cover;
+            width: 125px; 
+            height: 125px; 
+        }
+        .fruit img{
+            width: 100%;
+            height: 100%;
+        }
+        #score {
+            text-align: center;
+            font-size: 24px;
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
+        }
+        #lives {
+            text-align: center;
+            font-size: 24px;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1;
+        }
+        .life-icon {
+            width: 80px; 
+            height: 80px; 
+            transition: opacity 0.5s ease-in-out; 
+            animation: heartbeat 1s infinite;
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); } 
+            100% { transform: scale(1); }
+        }
+
+        .lost-heart-animation {
+            opacity: 0; 
+            transform: translateY(0); 
+            transition: opacity 1s ease-in-out, transform 1s ease-in-out; 
+        }
+
+        #timer {
+            position: absolute;
+            font-size: 24px;
+            top: 20px;
+            left: 20px;
+            z-index: 1;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%); 
+            width: 40%;
+            max-width: 400px; 
+            height: auto;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            border-radius: 10px; 
+            padding: 20px;
+            text-align: center;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            text-align: center;
+            border-radius: 20px;
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            color: black;
+        }
+
+        .restart-button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+        .restart-button:hover {
+            background-color: #45a049;
+        }
+
+        .return-home-button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+        .return-home-button:hover {
+            background-color: #45a049;
+        }
+
+        #countdown {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 72px;
+            color: white;
+            z-index: 9999;
+            display: none; 
+            pointer-events: none;
+        }
+
+        .cursor-trail {
+            position: absolute;
+            pointer-events: none;
+            z-index: 999; 
+            opacity: 0.5; 
+            border-radius: 100%;
+            background: linear-gradient(to bottom, #ff7f00, transparent); 
+            height: 35px;
+            width: 15px; 
+            animation: trailAnimation 0.5s ease-out forwards; 
+        }
+
+        @keyframes trailAnimation {
+            0% { transform: scaleX(0); opacity: 0; } 
+            5% { transform: scaleX(1.5); opacity: 0.8; } 
+            10% { transform: scaleX(1.8); opacity: 0.9; } 
+            15% { transform: scaleX(2); opacity: 1.5; } 
+            25% { transform: scaleX(2.3); opacity: 1.7; } 
+            35% { transform: scaleX(2.5); opacity: 1.9; } 
+            45% { transform: scaleX(2.7); opacity: 2; }
+            65% { transform: scaleX(3); opacity: 2.2; } 
+            75% { transform: scaleX(3.2); opacity: 2; } 
+            85% { transform: scaleX(3.5); opacity: 2.5; } 
+            95% { transform: scaleX(1.9); opacity: 2; } 
+            99% { transform: scaleX(2.3); opacity: 1.7; }
+            100% { transform: scaleX(1); opacity: 0; } 
+        }
+
+
+    </style>
+
+<script>
+    var score = 0;
+    var lives = 3; 
+    var timeLeft = 60; 
+    var timerInterval;
+    var fruits = ['apple', 'coconut', 'banana', 'kiwi', 'pineapple', 'orange', 'specialapple' ];
+    var isDragging = false; 
+    var specialFruitAppeared = false; 
+    var mousePos = { x: 0, y: 0 }; 
+    var gravity = 0.02; 
+    var currentScore = 0;
+    var highestScore = localStorage.getItem('highestScore') || 0;
+
+    function playSwordSound() {
+        var swordAudio = new Audio('Sound_Source/Sword_Sound_Effects/Sword-swipe-' + (Math.floor(Math.random() * 6) + 1) + '.wav');
+        swordAudio.play();
+    }
+
+    function playBGMusic() {
+        var bgdAudio = new Audio('Sound_Source/bgmusic.wav');
+        bgdAudio.play();
+    }
+
+    function createFruitOrBomb() {
+    var numItems = Math.floor(Math.random() * 5) + 1;
+    for (var i = 0; i < numItems; i++) {
+        (function() {
+            var itemType = Math.random() < 0.7 ? 'fruit' : 'bomb';
+            var item;
+            if (itemType === 'fruit') {
+                var fruitType = fruits[Math.floor(Math.random() * fruits.length)];
+                item = document.createElement('div');
+                item.classList.add('fruit');
+                item.innerHTML = `<img src="images/${fruitType}.png" alt="${fruitType}">`;
+            } else if (itemType === 'bomb') {
+                item = document.createElement('div');
+                item.classList.add('bomb');
+            } else if (!specialFruitAppeared && Math.random() < 0.2) { 
+                var fruitType = 'specialapple'; 
+                item = document.createElement('div');
+                item.classList.add('special-fruit');
+                item.innerHTML = `<img src="images/specialapple.png" alt="Special Fruit">`;
+                specialFruitAppeared = true;
+            }
+            if (item) {
+                item.style.left = Math.random() * (window.innerWidth - 100) + 'px';
+                item.style.top = '0px';
+                document.getElementById('game-container').appendChild(item);
+
+                var initialSpeed = Math.random() * 2 + 1.7;
+                var speed = initialSpeed;
+                var isSpecialAppleSliced = false; 
+                
+                
+                var interval = setInterval(function() {
+                    var topPos = parseInt(item.style.top);
+                    item.style.top = (topPos + speed) + 'px';
+
+                    speed += gravity;
+
+                    if (isDragging && isItemSliced(item)) {
+                        item.remove();
+                        if (itemType === 'fruit') {
+                            score += 5;
+                            document.getElementById('score-value').textContent = score;
+                            playSwordSound();
+                        } else if (itemType === 'special-fruit') {
+                            score += 5;
+                            document.getElementById('score-value').textContent = score;
+                            playSwordSound();
+                        } else {
+                            if (score >= 30) {
+                                score -= 30;
+                            } else if (score >= 20) {
+                                score -= 20;
+                            } else if (score >= 15) {
+                                score -= 15;
+                            }
+                            document.getElementById('score-value').textContent = score;
+                            explodeBomb(item);
+                            loseLife(); 
+                            if (lives <= 0) {
+                                clearInterval(timerInterval);
+                                document.getElementById('myModal').style.display = "block";
+                                document.getElementById('final-score').textContent = score;
+                                playGameOverSound(); 
+                            }
+                        }
+                    }
+
+                    if (parseInt(item.style.top) >= window.innerHeight) {
+                        clearInterval(interval);
+                        item.remove();
+                    }
+                }, 10);
+            }
+        })();
+    }
+}
+
+
+
+    function isItemSliced(item) {
+        var itemRect = item.getBoundingClientRect();
+        var mouseX = mousePos.x;
+        var mouseY = mousePos.y;
+
+        return (
+            mouseX >= itemRect.left &&
+            mouseX <= itemRect.right &&
+            mouseY >= itemRect.top &&
+            mouseY <= itemRect.bottom
+        );
+    }
+
+    function explodeBomb(bomb) {
+        bomb.style.backgroundColor = 'red'; 
+        setTimeout(function() {
+            bomb.style.backgroundColor = 'transparent';
+        }, 500); 
+    }
+
+    function loseLife() {
+        lives--;
+        updateLivesDisplay();
+        playLoseLifeSound();
+        animateHeartLoss(); 
+    }
+
+    function animateHeartLoss() {
+        var hearts = document.querySelectorAll('.life-icon');
+        var heartToRemove = hearts[lives];
+        heartToRemove.classList.add('lost-heart-animation'); 
+        setTimeout(function() {
+            heartToRemove.style.opacity = '0';
+            heartToRemove.style.transform = 'translateY(50px)'; 
+            setTimeout(function() {
+                heartToRemove.style.display = 'none'; 
+            }, 1000); 
+        }, 100); 
+    }
+
+
+    function playLoseLifeSound() {
+        var loseLifeAudio = new Audio('Sound_Source/explosion.wav');
+        loseLifeAudio.play();
+    }
+
+    function playGameOverSound() {
+        var gameOverAudio = new Audio('Sound_Source/Game-over.wav');
+        gameOverAudio.play();
+    }
+
+    document.addEventListener('mousemove', function(event) {
+        mousePos.x = event.clientX;
+        mousePos.y = event.clientY;
+
+        // Create cursor trail
+        var trail = document.createElement('div');
+        trail.classList.add('cursor-trail');
+        trail.style.left = event.clientX + 'px';
+        trail.style.top = event.clientY + 'px';
+        document.body.appendChild(trail);
+        setTimeout(function() {
+            trail.remove();
+        }, 500); 
+    });
+
+    document.addEventListener('mousedown', function() {
+        isDragging = true;
+        playSwordSound(); 
+
+        var trail = document.createElement('div');
+        trail.classList.add('cursor-trail');
+        document.body.appendChild(trail);
+
+        trail.style.left = event.clientX + 'px';
+        trail.style.top = event.clientY + 'px';
+
+        setTimeout(function() {
+        trail.remove();
+        }, 300);
+    });
+
+    document.addEventListener('mouseup', function() {
+        isDragging = false;
+    });
+
+    function updateLivesDisplay() {
+        var livesIcons = document.querySelectorAll('.life-icon');
+        for (var i = 0; i < livesIcons.length; i++) {
+            if (i < lives) {
+                livesIcons[i].style.visibility = 'visible';
+            } else {
+                livesIcons[i].style.visibility = 'hidden';
+            }
+        }
+    }
+
+    function startGame() {
+        timerInterval = setInterval(function() {
+            timeLeft--;
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                document.getElementById('myModal').style.display = "block";
+                document.getElementById('final-score').textContent = score;
+                updateScoresInModal(); 
+
+            }
+            document.getElementById('time-left').textContent = timeLeft;
+        }, 1000);
+
+        setInterval(createFruitOrBomb, 1000); 
+
+    }
+    window.onload = function() {
+    var countdown = document.getElementById('countdown');
+    var startGameButton = document.getElementById('startGameButton');
+    var countdownValue = 3;
+
+    var countdownInterval = setInterval(function() {
+        countdown.textContent = countdownValue;
+        countdownValue--;
+
+        if (countdownValue < 0) {
+            clearInterval(countdownInterval);
+            countdown.style.display = 'none';
+            startGame(); 
+            
+            
+            var bgMusic = document.getElementById('backgroundMusic');
+            bgMusic.muted = false;
+            bgMusic.play();
+        }
+    }, 1000);
+
+    countdown.style.display = 'block'; 
+};
+
+
+    function restartGame() {
+        window.location.reload();
+        var backgroundSound = new Audio('Sound_Source/bgmusic.wav');
+                backgroundSound.loop = true;
+                backgroundSound.play();
+    }
+    
+
+    function updateHighestScore() {
+           
+            if (currentScore > highestScore) {
+                highestScore = currentScore;
+                
+                localStorage.setItem('highestScore', highestScore);
+               
+                document.getElementById('highest-score').textContent = highestScore;
+            }
+        }
+
+        function updateScore() {
+            
+            document.getElementById('current-score').textContent = currentScore;
+           
+            updateHighestScore();
+        }
+
+        function updateScoresInModal() {
+            
+            document.getElementById('current-score-modal').textContent = currentScore;
+            
+            document.getElementById('highest-score-modal').textContent = highestScore;
+        }
+
+        function returnHome() {
+            window.location.href = "index.html"; 
+        }
+
+
+</script>
+
+</head>
+<body>
+    <div id="pre-countdown-text">Press your screen before the countdown ends for music! :^</div>
+
+    <div class="navbar">
+        <a href="index.html">Home</a>
+        <p>ENJOY!</p>
+        <a href="game.html">Restart</a>
+    </div>
+
+    <div id="game-container">
+        <p id="score">Score: <span id="score-value">0</span></p>
+        <div id="lives">
+            <img src="images/heart2.png" alt="Heart" class="life-icon" id="life1">
+            <img src="images/heart2.png" alt="Heart" class="life-icon" id="life2">
+            <img src="images/heart2.png" alt="Heart" class="life-icon" id="life3">
+        </div>
+        <div id="timer">Time Left: <span id="time-left">60</span>s</div>
+    </div>
+    
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <p>Game Over!</p>
+            <p>Current Score: <span id="final-score">0</span></p>
+            <button class="restart-button" onclick="restartGame()">Restart Game</button>
+            <button class="return-home-button" onclick="returnHome()">Return Home</button>
+        </div>
+    </div>
+    <div id="countdown"></div>
+
+    <audio id="backgroundMusic" muted>
+        <source src="Sound_Source/bgmusic.wav" type="audio/wav">
+    </audio>
+    
+</body>
+</html>

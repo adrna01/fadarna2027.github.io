@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap">
+  <link rel="icon" type="image/x-icon" href="images/logo (1).svg">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fruity-Wooty-Woo</title>
+  <script>
+    function openSheet() {
+      window.location.href = "howto.html"
+    }
+    function openDev() {
+      window.location.href = "dev.html"
+    }
+    function openPlay() {
+      window.location.href = "game.html"
+    }
+
+    function playBackgroundMusic() {
+      var backgroundMusic = document.getElementById('backgroundMusic');
+      backgroundMusic.muted = false; 
+      backgroundMusic.play(); 
+    }
+  </script>
+  <style>
+    
+    body {
+      background-image: url(imgs/homeimage.jpg);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      padding-top: 10%;
+      padding-bottom: 1%;
+      padding-left: 2%;
+      padding-right: 2%;
+      text-align: center;
+      font-family: "Silkscreen";
+    }
+
+    .container2 {
+      padding: 1%;
+      text-align: center;
+      font-family: "Silkscreen";
+    }
+    h1 {
+      font-family: "Silkscreen";
+      background-color: black;
+      color: white;
+      border: 5px solid rgb(17, 0, 102);
+      border-radius: 10px;
+      padding: 2%;
+      margin: 1% auto;
+      display: block;
+      width: 500px;
+    }
+
+    .button {
+      font-family: "Silkscreen";
+      font-size: 20px;
+      background-color: black;
+      color: white;
+      border: 5px solid rgb(17, 0, 102);
+      border-radius: 10px;
+      padding: 1%;
+      margin: 1% auto;
+      display: block;
+      width: 250px;
+    }
+
+    .silkscreen-regular {
+      font-family: "Silkscreen", sans-serif;
+      font-weight: 400;
+      font-style: normal;
+    }
+
+    .silkscreen-bold {
+      font-family: "Silkscreen", sans-serif;
+      font-weight: 700;
+      font-style: normal;
+    }
+
+    button:hover {
+      background-color: #232324;
+    }
+
+    #pregamenote {
+      color: white;
+      font-family: 'VT323', monospace;
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body onload="playBackgroundMusic()">
+  <script src="https://static.elfsight.com/platform/platform.js" data-use-service-core defer></script>
+  <div class="elfsight-app-850e408a-80c5-4b2a-ab50-c0290624a8b4" data-elfsight-app-lazy></div> 
+  <div id="pregamenote"><b>Press anywhere on the background for music!</b></div>
+  <div class="container">
+    <h1>FRUITY - WOOTY - WOO</h1>
+  </div>
+  <div class="container2">
+    <button class="button" onclick="openPlay()">PLAY</button>
+    <button class="button" onclick="openSheet()">HOW TO PLAY</button>
+    <button class="button" onclick="openDev()">DEVELOPERS</button>
+  </div>
+  <audio id="backgroundMusic">
+    <source src="imgs/animal crossing.mp3" type="audio/mpeg">
+  </audio>
+</body>
+</html>
